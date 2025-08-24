@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="استودیو ویدیو هوشمند برای ساخت ویدیوهای خلاقانه با استفاده از هوش مصنوعی">
+    <meta name="author" content="Hamid Yarali">
+    <title>🎬 AI Video Studio - استودیو ویدیو هوشمند</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Optimized Dark Background */
+        .dark-glass-bg {
+            background: linear-gradient(135deg, 
+                #0f0f23 0%, 
+                #1a1a2e 25%, 
+                #16213e 50%, 
+                #1a1a2e 75%, 
+                #0f0f23 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Optimized Glass Morphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Modern Gradient Button */
+        .gradient-btn {
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 100%);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .gradient-btn:hover::before {
+            left: 100%;
+        }
+        
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Optimized Loading Animation */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Progress Bar */
+        .progress-bg {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Text Glow Effect */
+        .text-glow {
+            background: linear-gradient(135deg, 
+                #ffffff 0%, 
+                #667eea 50%, 
+                #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Smooth Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.8s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Input Styles */
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .glass-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Quick Prompt Buttons */
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .glass-card {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            .md\:grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        /* Accessibility Improvements */
+        .focus-visible:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Lazy Loading for Videos */
+        video {
+            loading: lazy;
+        }
+    </style>
+</head>
+<body class="dark-glass-bg">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-card">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="text-2xl">🎬</div>
+                    <h1 class="text-lg font-bold text-white">AI Video Studio</h1>
+                </div>
+                <div class="flex items-center gap-2 text-white/70 text-sm">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    آنلاین
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 mt-20">
+        <!-- Hero Section -->
+        <div class="text-center mb-16 fade-in">
+            <h1 class="text-5xl md:text-6xl font-bold text-glow mb-6">
+                استودیو ویدیو AI
+            </h1>
+            <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed">
+                تبدیل ایده‌هایتان به ویدیوهای شگفت‌انگیز با قدرت هوش مصنوعی
+            </p>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+                <div class="glass-card rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-white mb-1">1M+</div>
+                    <div class="text-white/60 text-sm">ویدیو ساخته شده</div>
+                </div>
+                <div class="glass-card rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-white mb-1">50K+</div>
+                    <div class="text-white/60 text-sm">کاربر فعال</div>
+                </div>
+                <div class="glass-card rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-white mb-1">99.9%</div>
+                    <div class="text-white/60 text-sm">آپتایم</div>
+                </div>
+                <div class="glass-card rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold text-white mb-1">4K</div>
+                    <div class="text-white/60 text-sm">کیفیت</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Studio -->
+        <div class="max-w-4xl mx-auto glass-card rounded-3xl p-8 slide-up">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-white mb-2">🎬 استودیو خلاقیت</h2>
+                <p class="text-white/70">ایده‌هایتان را به ویدیو تبدیل کنید</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Input Section -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-white font-medium mb-3 flex items-center gap-2">
+                            <span class="text-xl">✨</span>
+                            توضیح ویدیو
+                        </label>
+                        <textarea 
+                            id="prompt" 
+                            placeholder="مثال: یک گربه زیبا در حال بازی در باغ پر از گل‌های رنگارنگ..."
+                            class="w-full p-4 glass-input rounded-xl resize-none h-32 text-right focus-visible"
+                            dir="rtl"
+                        ></textarea>
+                        
+                        <!-- Quick Prompts -->
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button class="quick-btn quick-prompt px-3 py-1 rounded-full text-sm focus-visible" data-prompt="یک گربه زیبا در حال بازی در باغ">🐱 گربه در باغ</button>
+                            <button class="quick-btn quick-prompt px-3 py-1 rounded-full text-sm focus-visible" data-prompt="غروب آفتاب در کنار دریا">🌅 غروب دریا</button>
+                            <button class="quick-btn quick-prompt px-3 py-1 rounded-full text-sm focus-visible" data-prompt="شهر مدرن در شب">🌃 شهر شب</button>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="glass-card p-4 rounded-xl">
+                        <h3 class="text-white font-medium mb-3 flex items-center gap-2">
+                            <span>⚙️</span>
+                            تنظیمات
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Output Type -->
+                            <div>
+                                <label class="block text-white/80 text-sm mb-2">نوع خروجی:</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center cursor-pointer glass-card rounded-lg px-3 py-2 hover:bg-white/10">
+                                        <input type="radio" name="output" value="video" checked class="mr-2 focus-visible">
+                                        <span class="text-white text-sm">🎥 ویدیو</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer glass-card rounded-lg px-3 py-2 hover:bg-white/10">
+                                        <input type="radio" name="output" value="url" class="mr-2 focus-visible">
+                                        <span class="text-white text-sm">🔗 لینک</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Quality -->
+                            <div>
+                                <label class="block text-white/80 text-sm mb-2">کیفیت:</label>
+                                <select class="w-full p-2 glass-input rounded-lg text-sm focus-visible">
+                                    <option value="hd" class="bg-gray-800">HD (720p)</option>
+                                    <option value="fhd" class="bg-gray-800" selected>Full HD (1080p)</option>
+                                    <option value="4k" class="bg-gray-800">4K (2160p)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls Section -->
+                <div class="space-y-6">
+                    <!-- Progress -->
+                    <div id="progressSection" class="glass-card p-4 rounded-xl hidden">
+                        <h3 class="text-white font-medium mb-3 flex items-center gap-2">
+                            <span>⏳</span>
+                            در حال پردازش...
+                        </h3>
+                        <div class="progress-bg h-2 mb-3">
+                            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="text-white/70 text-sm text-center" id="progressText">آماده‌سازی...</div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button 
+                        id="generateBtn"
+                        class="w-full gradient-btn text-white font-bold py-4 px-6 rounded-xl text-lg relative focus-visible"
+                    >
+                        <span id="btnText" class="flex items-center justify-center gap-2">
+                            <span class="text-xl">🚀</span>
+                            ساخت ویدیو
+                        </span>
+                        <div id="btnLoading" class="loading-spinner mx-auto hidden"></div>
+                    </button>
+
+                    <!-- Quick Actions -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="glass-card p-3 rounded-xl text-white hover:bg-white/10 text-center focus-visible">
+                            <div class="text-xl mb-1">📁</div>
+                            <div class="text-xs">ویدیوهای من</div>
+                        </button>
+                        <button class="glass-card p-3 rounded-xl text-white hover:bg-white/10 text-center focus-visible">
+                            <div class="text-xl mb-1">💡</div>
+                            <div class="text-xs">ایده‌ها</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="mt-8 hidden">
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-2">🎉</div>
+                        <h3 class="text-xl font-bold text-white mb-1">ویدیو آماده است!</h3>
+                        <p class="text-white/70 text-sm">ویدیو با موفقیت ساخته شد</p>
+                    </div>
+                    <div id="videoResult"></div>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="errorSection" class="mt-8 hidden">
+                <div class="glass-card border border-red-400/30 rounded-2xl p-6">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-2">⚠️</div>
+                        <h3 class="text-lg font-bold text-red-300 mb-1">خطا در ساخت ویدیو</h3>
+                    </div>
+                    <p id="errorMessage" class="text-red-200 text-center text-sm"></p>
+                    <div class="mt-4 text-center">
+                        <button onclick="hideError()" class="gradient-btn px-4 py-2 rounded-lg text-white text-sm focus-visible">
+                            تلاش مجدد
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="max-w-6xl mx-auto mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-3">🌟 ویژگی‌های کلیدی</h2>
+                <p class="text-white/70">تکنولوژی پیشرفته در خدمت خلاقیت</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-card rounded-2xl p-6 text-center text-white">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="font-bold mb-2">سرعت بالا</h3>
+                    <p class="text-white/70 text-sm">پردازش در کمتر از 30 ثانیه</p>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 text-center text-white">
+                    <div class="text-4xl mb-4">🎨</div>
+                    <h3 class="font-bold mb-2">کیفیت 4K</h3>
+                    <p class="text-white/70 text-sm">خروجی با کیفیت سینمایی</p>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 text-center text-white">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="font-bold mb-2">هوش مصنوعی</h3>
+                    <p class="text-white/70 text-sm">الگوریتم‌های پیشرفته</p>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 text-center text-white">
+                    <div class="text-4xl mb-4">🌍</div>
+                    <h3 class="font-bold mb-2">چندزبانه</h3>
+                    <p class="text-white/70 text-sm">پشتیبانی از 50+ زبان</p>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 text-center text-white">
+                    <div class="text-4xl mb-4">🔒</div>
+                    <h3 class="font-bold mb-2">امنیت بالا</h3>
+                    <p class="text-white/70 text-sm">رمزگذاری پیشرفته</p>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-6 text-center text-white">
+                    <div class="text-4xl mb-4">☁️</div>
+                    <h3 class="font-bold mb-2">ذخیره ابری</h3>
+                    <p class="text-white/70 text-sm">دسترسی از همه جا</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-20 pb-8">
+            <div class="glass-card rounded-2xl p-8 max-w-4xl mx-auto text-center">
+                <h3 class="text-2xl font-bold text-glow mb-4">ساخته شده با تکنولوژی آینده</h3>
+                <p class="text-white/70 mb-6">جایی که خلاقیت با هوش مصنوعی ملاقات می‌کند</p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-3xl mb-2">👨‍💻</div>
+                        <h4 class="font-bold text-white mb-1">توسعه دهنده</h4>
+                        <p class="text-white/70 text-sm mb-2">Hamid Yarali</p>
+                        <a href="https://www.instagram.com/hamidyaraliofficial?igsh=MWpxZjhhMHZuNnlpYQ==" target="_blank" class="text-purple-300 font-mono text-sm hover:text-purple-100">@hamidyaraliofficial</a>
+                    </div>
+                    
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-3xl mb-2">📚</div>
+                        <h4 class="font-bold text-white mb-1">گیت‌هاب</h4>
+                        <p class="text-white/70 text-sm mb-2">منابع و پروژه‌ها</p>
+                        <a href="https://github.com/HamidYaraliOfficial" target="_blank" class="text-blue-300 font-mono text-sm hover:text-blue-100">@HamidYaraliOfficial</a>
+                    </div>
+                </div>
+                
+                <div class="border-t border-white/10 pt-4">
+                    <p class="text-white/50 text-sm">
+                        © 2024 AI Video Studio - طراحی و توسعه توسط Hamid Yarali - تمامی حقوق محفوظ است
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const API_TOKEN = 'jrfxczmnu1hwjqo:x5qSb4mDAb9uRtG3gBga';
+        const API_BASE_URL = 'https://api.majidapi.ir/ai/video';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.quick-prompt').forEach(button => {
+                button.addEventListener('click', function() {
+                    const prompt = this.getAttribute('data-prompt');
+                    document.getElementById('prompt').value = prompt;
+                    showNotification('پرامپت انتخاب شد!', 'success');
+                });
+            });
+
+            // Show welcome notification
+            showWelcomeNotification();
+            
+            // Keyboard accessibility
+            document.querySelectorAll('button, a, input, select, textarea').forEach(element => {
+                element.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        if (this.tagName === 'BUTTON' || this.tagName === 'A') {
+                            e.preventDefault();
+                            this.click();
+                        }
+                    }
+                });
+            });
+
+            // Prevent default form submission
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function showWelcomeNotification() {
+            setTimeout(() => {
+                showNotification('خوش آمدید به AI Video Studio! 🚀', 'success', 4000);
+            }, 1000);
+        }
+
+        // Progress simulation
+        function simulateProgress() {
+            const progressSection = document.getElementById('progressSection');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressSection.classList.remove('hidden');
+            
+            const steps = [
+                { progress: 25, text: 'تجزیه و تحلیل متن...' },
+                { progress: 50, text: 'تولید تصاویر...' },
+                { progress: 75, text: 'ساخت انیمیشن...' },
+                { progress: 100, text: 'تکمیل شد!' }
+            ];
+            
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    const step = steps[currentStep];
+                    progressBar.style.width = step.progress + '%';
+                    progressText.textContent = step.text;
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressSection.classList.add('hidden');
+                    }, 1000);
+                }
+            }, 800);
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const prompt = document.getElementById('prompt').value.trim();
+            const outputType = document.querySelector('input[name="output"]:checked').value;
+            const quality = document.querySelector('select').value;
+            
+            if (!prompt) {
+                showError('لطفاً توضیحی برای ویدیو وارد کنید');
+                showNotification('متن ورودی خالی است!', 'error');
+                return;
+            }
+
+            showLoading(true);
+            hideError();
+            hideResult();
+            simulateProgress();
+
+            try {
+                const url = `${API_BASE_URL}?prompt=${encodeURIComponent(prompt)}&out=${outputType}&quality=${quality}&token=${API_TOKEN}`;
+                
+                showNotification('درخواست ارسال شد...', 'info');
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': '*/*',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`خطا در درخواست (${response.status}): ${errorText}`);
+                }
+
+                const responseText = await response.text();
+                
+                let result;
+                
+                if (!responseText || responseText.trim() === '') {
+                    throw new Error('پاسخ خالی از سرور دریافت شد');
+                }
+                
+                try {
+                    result = JSON.parse(responseText);
+                    
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                } catch (jsonError) {
+                    if (responseText.startsWith('http')) {
+                        result = responseText.trim();
+                    } else {
+                        throw new Error(`فرمت پاسخ ناشناخته. پاسخ دریافتی: ${responseText.substring(0, 100)}...`);
+                    }
+                }
+
+                showNotification('🎉 ویدیو با موفقیت ساخته شد!', 'success');
+                showResult(result, outputType);
+                
+            } catch (error) {
+                showError(`خطا در ساخت ویدیو: ${error.message}`);
+                showNotification('❌ خطا در ساخت ویدیو!', 'error');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        function showLoading(show) {
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            const btn = document.getElementById('generateBtn');
+            
+            if (show) {
+                btnText.classList.add('hidden');
+                btnLoading.classList.remove('hidden');
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnText.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function showResult(result, outputType) {
+            const resultSection = document.getElementById('resultSection');
+            const videoResult = document.getElementById('videoResult');
+            
+            let videoUrl;
+            if (typeof result === 'string') {
+                videoUrl = result.trim();
+            } else if (result && typeof result === 'object') {
+                videoUrl = result.url || result.video || result.data || result.link || result.file || result.download;
+                
+                if (!videoUrl) {
+                    for (const [key, value] of Object.entries(result)) {
+                        if (typeof value === 'string' && (value.startsWith('http') || value.includes('.'))) {
+                            videoUrl = value;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!videoUrl) {
+                showError(`فرمت پاسخ API قابل تشخیص نیست. پاسخ دریافتی: ${JSON.stringify(result)}`);
+                return;
+            }
+            
+            if (outputType === 'url') {
+                videoResult.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="glass-card p-4 rounded-xl">
+                            <h4 class="text-white font-medium mb-3 flex items-center gap-2">
+                                <span>🔗</span>
+                                لینک ویدیو
+                            </h4>
+                            <div class="glass-card border border-white/20 rounded-lg p-3 mb-3">
+                                <a href="${videoUrl}" target="_blank" class="text-purple-300 hover:text-purple-100 break-all text-sm focus-visible">
+                                    ${videoUrl}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 justify-center">
+                            <button onclick="copyToClipboard('${videoUrl}')" class="gradient-btn px-4 py-2 rounded-lg flex items-center gap-2 text-sm focus-visible">
+                                <span>📋</span>
+                                کپی لینک
+                            </button>
+                            <a href="${videoUrl}" target="_blank" class="gradient-btn px-4 py-2 rounded-lg inline-flex items-center gap-2 text-sm focus-visible">
+                                <span>👁️</span>
+                                مشاهده
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                videoResult.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="glass-card p-4 rounded-xl">
+                            <video controls class="w-full rounded-lg" preload="metadata" loading="lazy">
+                                <source src="${videoUrl}" type="video/mp4">
+                                مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                            </video>
+                        </div>
+                        <div class="flex gap-3 justify-center flex-wrap">
+                            <a href="${videoUrl}" download class="gradient-btn px-4 py-2 rounded-lg inline-flex items-center gap-2 text-sm focus-visible">
+                                <span>💾</span>
+                                دانلود
+                            </a>
+                            <button onclick="copyToClipboard('${videoUrl}')" class="gradient-btn px-4 py-2 rounded-lg flex items-center gap-2 text-sm focus-visible">
+                                <span>📋</span>
+                                کپی لینک
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultSection.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            const errorSection = document.getElementById('errorSection');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('errorSection').classList.add('hidden');
+        }
+
+        function hideResult() {
+            document.getElementById('resultSection').classList.add('hidden');
+        }
+
+        function showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.createElement('div');
+            notification.className = `notification rounded-xl px-6 py-3 text-white shadow-lg ${
+                type === 'success' ? 'bg-green-500/80' : 
+                type === 'error' ? 'bg-red-500/80' : 
+                'bg-blue-500/80'
+            }`;
+            
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '💫';
+            
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">${icon}</span>
+                    <p class="font-medium text-sm">${message}</p>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.classList.add('opacity-0');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, duration);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                showNotification('🎉 لینک کپی شد!', 'success');
+            }).catch(function(err) {
+                showNotification('❌ خطا در کپی کردن!', 'error');
+            });
+        }
+    </script>
+</body>
+</html>
